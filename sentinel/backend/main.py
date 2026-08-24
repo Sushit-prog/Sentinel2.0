@@ -15,6 +15,9 @@ from backend.api.middleware import (
     RateLimitMiddleware,
     RequestContextMiddleware,
 )
+from backend.api.analytics import router as analytics_router
+from backend.api.currencyguard import router as currencyguard_router
+from backend.api.fraudgraph import router as fraudgraph_router
 from backend.api.scamwatch import router as scamwatch_router
 from backend.core.config import get_settings
 from backend.core.logging import configure_logging
@@ -60,6 +63,11 @@ app.add_middleware(
 )
 
 app.include_router(scamwatch_router, prefix="/api/scamwatch", tags=["SCAMWatch"])
+app.include_router(fraudgraph_router, prefix="/api/fraudgraph", tags=["FRAUDGraph"])
+app.include_router(
+    currencyguard_router, prefix="/api/currencyguard", tags=["CURRENCYGuard"]
+)
+app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"])
 
 
 @app.get("/", tags=["System"])

@@ -1,0 +1,1 @@
+"""CURRENCYGuard screening module."""
