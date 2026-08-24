@@ -29,7 +29,7 @@ FACTS_SCAM = {
 VERDICT_SCAM = {
     "is_scam": True,
     "scam_type": "digital_arrest",
-    "confidence": 0.9,
+    "confidence": 0.8,
     "citations": [1],
     "reasoning": "CBI impersonation plus digital arrest claim plus money demand.",
     "recommended_action": "Hang up and call 1930.",
@@ -73,7 +73,7 @@ def test_scam_path_full_pipeline_emits_event(db_session, fake_llm):
     assert not response.degraded
     assert response.scam_type == ScamType.DIGITAL_ARREST
     assert response.risk_level in (RiskLevel.CRITICAL, RiskLevel.HIGH)
-    assert response.confidence > 0.8
+    assert response.confidence >= 0.8
     assert response.verification.samples == 3
     assert response.verification.agreement_ratio == 1.0
     assert len(response.evidence) >= 1

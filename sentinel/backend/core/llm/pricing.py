@@ -1,14 +1,14 @@
 """Estimated token pricing (USD per 1M tokens, Groq published list prices).
 
 Figures are for cost accounting only; free-tier usage bills at zero.
-Numbers must be refreshed when providers change list prices.
+Model catalog verified 2026-08; refresh when providers change.
 """
 
 from backend.core.llm.schemas import Route
 
 PRICES_PER_MTOK: dict[str, tuple[float, float]] = {
-    "llama-3.3-70b-versatile": (0.59, 0.79),
-    "llama-3.1-8b-instant": (0.05, 0.08),
+    "openai/gpt-oss-120b": (0.15, 0.75),
+    "openai/gpt-oss-20b": (0.10, 0.50),
 }
 
 FALLBACK_PRICE = (1.0, 1.0)

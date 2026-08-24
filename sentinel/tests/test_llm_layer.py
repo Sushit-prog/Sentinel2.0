@@ -98,9 +98,11 @@ def test_token_budget_guards():
 
 
 def test_cost_estimation_uses_model_table():
-    strong = estimate_cost_usd("llama-3.3-70b-versatile", 1_000_000, 0)
-    fast = estimate_cost_usd("llama-3.1-8b-instant", 1_000_000, 0)
-    assert strong > fast * 5
+    strong = estimate_cost_usd("openai/gpt-oss-120b", 1_000_000, 0)
+    fast = estimate_cost_usd("openai/gpt-oss-20b", 1_000_000, 0)
+    assert strong > fast
+    unknown = estimate_cost_usd("mystery-model", 1_000_000, 0)
+    assert unknown == 1.0
 
 
 def test_structured_output_error_carries_raw_text():

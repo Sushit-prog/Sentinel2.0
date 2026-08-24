@@ -7,7 +7,7 @@ from typing import Literal, Optional
 from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-_SENTINEL_DIR = Path(__file__).resolve().parent.parent
+_SENTINEL_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 class Settings(BaseSettings):
@@ -23,8 +23,8 @@ class Settings(BaseSettings):
 
     groq_api_key: SecretStr
 
-    llm_strong_model: str = "llama-3.3-70b-versatile"
-    llm_fast_model: str = "llama-3.1-8b-instant"
+    llm_strong_model: str = "openai/gpt-oss-120b"
+    llm_fast_model: str = "openai/gpt-oss-20b"
     llm_router_default: Literal["auto", "fast", "strong"] = "auto"
     llm_timeout_s: float = 30.0
     llm_max_retries: int = 2

@@ -105,7 +105,7 @@ SCAM_PATTERNS = {
         "typical_channel": "call",
         "modus_operandi": "Victim tricked into sharing OTP or installing remote access app",
     },
-    "romance_scam": {
+    "romance": {
         "description": "Fake romantic relationship to extract money",
         "keywords": [
             "met online",

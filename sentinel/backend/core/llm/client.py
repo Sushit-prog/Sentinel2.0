@@ -169,6 +169,14 @@ class LLMClient:
                 if attempt < self._settings.llm_max_retries:
                     time.sleep(sleep_s)
                     delay *= 2
+            except Exception as exc:
+                last_exc = exc
+                logger.warning(
+                    "llm_nonretryable attempt=%d error=%s",
+                    attempt + 1,
+                    type(exc).__name__,
+                )
+                break
         raise ProviderUnavailable(
             f"provider unavailable after retries: {last_exc}"
         ) from last_exc

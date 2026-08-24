@@ -60,8 +60,10 @@ def build_citizen_alert(analysis: ScamAnalysisResponse, language: str = "en") ->
         one_liner = "No strong scam indicators found in this message."
 
     actions = list(_ACTIONS_BY_RISK[analysis.risk_level])
-    if analysis.recommended_action and analysis.risk_level != RiskLevel.LOW:
-        actions.append(analysis.recommended_action)
+    # Model-authored recommended_action is intentionally EXCLUDED here:
+    # citizen-facing guidance must be template-only so that instructions
+    # injected into the analyzed message can never author safety advice.
+    # Investigators can still read it in the full analysis payload.
 
     return {
         "case_id": analysis.case_id,

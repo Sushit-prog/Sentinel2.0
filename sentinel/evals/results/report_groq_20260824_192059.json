@@ -1,0 +1,266 @@
+{
+  "variants": {
+    "rules_only": {
+      "n": 62,
+      "accuracy": 0.5323,
+      "precision": 0.8333,
+      "recall": 0.1515,
+      "f1": 0.2564,
+      "fpr": 0.0345,
+      "fnr": 0.8485,
+      "tp": 5,
+      "fp": 1,
+      "fn": 28,
+      "tn": 28,
+      "ece": 0.2516,
+      "brier": 0.2529,
+      "latency_ms": {
+        "p50": 0,
+        "p95": 0,
+        "max": 0
+      },
+      "total_cost_usd": 0.0,
+      "degraded_count": 0,
+      "needs_review_count": 0,
+      "error_count": 0
+    },
+    "single_prompt": {
+      "n": 62,
+      "accuracy": 0.9194,
+      "precision": 0.9667,
+      "recall": 0.8788,
+      "f1": 0.9206,
+      "fpr": 0.0345,
+      "fnr": 0.1212,
+      "tp": 29,
+      "fp": 1,
+      "fn": 4,
+      "tn": 28,
+      "ece": 0.4219,
+      "brier": 0.3988,
+      "latency_ms": {
+        "p50": 593,
+        "p95": 765,
+        "max": 1000
+      },
+      "total_cost_usd": 0.00617,
+      "degraded_count": 0,
+      "needs_review_count": 0,
+      "error_count": 0
+    },
+    "hybrid_noverify": {
+      "n": 61,
+      "accuracy": 0.6721,
+      "precision": 0.6579,
+      "recall": 0.7812,
+      "f1": 0.7143,
+      "fpr": 0.4483,
+      "fnr": 0.2188,
+      "tp": 25,
+      "fp": 13,
+      "fn": 7,
+      "tn": 16,
+      "ece": 0.2779,
+      "brier": 0.2188,
+      "latency_ms": {
+        "p50": 0,
+        "p95": 2187,
+        "max": 2436
+      },
+      "total_cost_usd": 0.003186,
+      "degraded_count": 0,
+      "needs_review_count": 0,
+      "error_count": 1
+    },
+    "hybrid_full": {
+      "n": 61,
+      "accuracy": 0.6721,
+      "precision": 0.6579,
+      "recall": 0.7812,
+      "f1": 0.7143,
+      "fpr": 0.4483,
+      "fnr": 0.2188,
+      "tp": 25,
+      "fp": 13,
+      "fn": 7,
+      "tn": 16,
+      "ece": 0.2779,
+      "brier": 0.2188,
+      "latency_ms": {
+        "p50": 0,
+        "p95": 2187,
+        "max": 2436
+      },
+      "total_cost_usd": 0.003186,
+      "degraded_count": 0,
+      "needs_review_count": 0,
+      "error_count": 1
+    }
+  },
+  "by_dataset": {
+    "rules_only": {
+      "synthetic_indian": {
+        "n": 28,
+        "accuracy": 0.5357,
+        "precision": 1.0,
+        "recall": 0.2778,
+        "f1": 0.4348,
+        "fpr": 0.0,
+        "fnr": 0.7222,
+        "tp": 5,
+        "fp": 0,
+        "fn": 13,
+        "tn": 10
+      },
+      "adversarial": {
+        "n": 10,
+        "accuracy": 0.6,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.1429,
+        "fnr": 1.0,
+        "tp": 0,
+        "fp": 1,
+        "fn": 3,
+        "tn": 6
+      },
+      "uci_sms": {
+        "n": 24,
+        "accuracy": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.0,
+        "fnr": 1.0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 12,
+        "tn": 12
+      }
+    },
+    "single_prompt": {
+      "synthetic_indian": {
+        "n": 28,
+        "accuracy": 0.9643,
+        "precision": 1.0,
+        "recall": 0.9444,
+        "f1": 0.9714,
+        "fpr": 0.0,
+        "fnr": 0.0556,
+        "tp": 17,
+        "fp": 0,
+        "fn": 1,
+        "tn": 10
+      },
+      "adversarial": {
+        "n": 10,
+        "accuracy": 0.8,
+        "precision": 1.0,
+        "recall": 0.3333,
+        "f1": 0.5,
+        "fpr": 0.0,
+        "fnr": 0.6667,
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "tn": 7
+      },
+      "uci_sms": {
+        "n": 24,
+        "accuracy": 0.9167,
+        "precision": 0.9167,
+        "recall": 0.9167,
+        "f1": 0.9167,
+        "fpr": 0.0833,
+        "fnr": 0.0833,
+        "tp": 11,
+        "fp": 1,
+        "fn": 1,
+        "tn": 11
+      }
+    },
+    "hybrid_noverify": {
+      "synthetic_indian": {
+        "n": 28,
+        "accuracy": 0.7857,
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1": 0.8571,
+        "fpr": 0.6,
+        "fnr": 0.0,
+        "tp": 18,
+        "fp": 6,
+        "fn": 0,
+        "tn": 4
+      },
+      "adversarial": {
+        "n": 10,
+        "accuracy": 0.3,
+        "precision": 0.3,
+        "recall": 1.0,
+        "f1": 0.4615,
+        "fpr": 1.0,
+        "fnr": 0.0,
+        "tp": 3,
+        "fp": 7,
+        "fn": 0,
+        "tn": 0
+      },
+      "uci_sms": {
+        "n": 23,
+        "accuracy": 0.6957,
+        "precision": 1.0,
+        "recall": 0.3636,
+        "f1": 0.5333,
+        "fpr": 0.0,
+        "fnr": 0.6364,
+        "tp": 4,
+        "fp": 0,
+        "fn": 7,
+        "tn": 12
+      }
+    },
+    "hybrid_full": {
+      "synthetic_indian": {
+        "n": 28,
+        "accuracy": 0.7857,
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1": 0.8571,
+        "fpr": 0.6,
+        "fnr": 0.0,
+        "tp": 18,
+        "fp": 6,
+        "fn": 0,
+        "tn": 4
+      },
+      "adversarial": {
+        "n": 10,
+        "accuracy": 0.3,
+        "precision": 0.3,
+        "recall": 1.0,
+        "f1": 0.4615,
+        "fpr": 1.0,
+        "fnr": 0.0,
+        "tp": 3,
+        "fp": 7,
+        "fn": 0,
+        "tn": 0
+      },
+      "uci_sms": {
+        "n": 23,
+        "accuracy": 0.6957,
+        "precision": 1.0,
+        "recall": 0.3636,
+        "f1": 0.5333,
+        "fpr": 0.0,
+        "fnr": 0.6364,
+        "tp": 4,
+        "fp": 0,
+        "fn": 7,
+        "tn": 12
+      }
+    }
+  }
+}

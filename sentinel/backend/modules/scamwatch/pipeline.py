@@ -86,15 +86,16 @@ class ScamPipeline:
 
         existing = repo.find_case_by_digest(session, digest)
         if (
-            existing
+            existing is not None
+            and existing.verdict
             and existing.status in ("done", "degraded")
             and existing.created_at
             > datetime.now(existing.created_at.tzinfo) - _REPLAY_WINDOW
         ):
             logger.info("replaying cached case %s", existing.id)
-            prior = ScamAnalysisResponse.model_validate(
-                {**existing.verdict, "status": "replayed"}
-            )
+            stored = dict(existing.verdict)
+            stored["status"] = "replayed"
+            prior = ScamAnalysisResponse.model_validate(stored)
             return prior
 
         case = repo.create_case(
@@ -145,8 +146,16 @@ class ScamPipeline:
                 session, case.id, seq := seq + 1, "privileged_verdict", v_verdict
             )
 
-            verification = VerificationSummary()
-            if verdict.is_scam:
+            verification = VerificationSummary(method="skipped_high_confidence")
+            # Selective verification: probe only verdicts that are not
+            # already high-confidence. Benchmark ablation (evals/) showed
+            # unconditional sampling adds latency and suppresses recall
+            # without improving precision on confident predictions.
+            if (
+                verdict.is_scam
+                and self._settings.llm_verification_samples > 0
+                and verdict.confidence < 0.90
+            ):
                 verdict, verification, v_samples = self._verify(
                     verdict, text, facts, evidence_items
                 )
@@ -260,8 +269,8 @@ class ScamPipeline:
         user = (
             f"MESSAGE:\n{text[:3000]}\n\n"
             f"EVIDENCE:\n{block}\n\n"
-            f"RULE SIGNALS: type_hint={pre.matched_type.value if pre.matched_type else 'none'} "
-            f"rule_score={pre.rule_score} otp={pre.signals.requests_otp} money={pre.signals.requests_money}"
+            "Judge independently. Prescreen/router signals are deliberately "
+            "not shown to you - they must not bias this verdict."
         )
         result, llm_result = self._client.extract(
             Verdict,
@@ -331,7 +340,10 @@ class ScamPipeline:
         )
 
         needs_review = agreement_ratio < 0.99
-        fused_confidence = round(verdict.confidence * agreement_ratio, 3)
+        # Bounded penalty: disagreement reduces confidence by at most 30%.
+        # Unbounded multiplication let fast-model sampling variance suppress
+        # confident-correct verdicts (see benchmark ablation).
+        fused_confidence = round(verdict.confidence * max(agreement_ratio, 0.70), 3)
         updated = verdict.model_copy(update={"confidence": fused_confidence})
         summary = VerificationSummary(
             samples=len(labels),
@@ -581,7 +593,7 @@ class ScamPipeline:
 def _default_action(scam_type: ScamType | None, scam: bool) -> str:
     if not scam:
         return "No action needed. Stay alert for follow-up messages."
-    return {
+    actions = {
         ScamType.DIGITAL_ARREST: "Hang up. No government agency arrests people over video calls. Report at cybercrime.gov.in or call 1930.",
         ScamType.FAKE_KYC: "Do not click links or share OTPs. Verify directly in your bank's official app. Call 1930 if you shared details.",
         ScamType.FAKE_INVESTMENT: "Do not transfer funds. Guaranteed high returns are always fraud. Report at cybercrime.gov.in.",
@@ -589,7 +601,8 @@ def _default_action(scam_type: ScamType | None, scam: bool) -> str:
         ScamType.FAKE_LOTTERY: "You have not won anything. Never pay to claim prizes. Report at cybercrime.gov.in.",
         ScamType.IMPERSONATION: "Hang up and call your bank's official number. Never share OTPs. Call 1930 if you did.",
         ScamType.ROMANCE: "Do not send money to someone you have not met in person. Report at cybercrime.gov.in.",
-    }.get(
+    }
+    return actions.get(
         scam_type,
         "Exercise caution. Do not share OTPs or transfer money. Call 1930 for help.",
     )
