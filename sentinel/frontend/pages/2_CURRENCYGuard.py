@@ -6,25 +6,25 @@ import sys
 import os
 
 # Add project root to Python path for backend imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-st.set_page_config(
-    page_title="CURRENCYGuard — SENTINEL",
-    page_icon="💵",
-    layout="wide"
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+
+st.set_page_config(page_title="CURRENCYGuard — SENTINEL", page_icon="💵", layout="wide")
 
 BACKEND_URL = "http://localhost:8000"
 
 VERDICT_CONFIG = {
-    "GENUINE":      ("✅", "#d4edda", "#155724", "Note appears authentic"),
-    "SUSPECT":      ("⚠️", "#fff3cd", "#856404", "Note requires further verification"),
-    "COUNTERFEIT":  ("🚫", "#f8d7da", "#721c24", "Note flagged as likely counterfeit"),
+    "GENUINE": ("✅", "#d4edda", "#155724", "Note appears authentic"),
+    "SUSPECT": ("⚠️", "#fff3cd", "#856404", "Note requires further verification"),
+    "COUNTERFEIT": ("🚫", "#f8d7da", "#721c24", "Note flagged as likely counterfeit"),
     "INCONCLUSIVE": ("❓", "#e2e3e5", "#383d41", "Insufficient data for determination"),
 }
 
 st.title("💵 CURRENCYGuard")
-st.caption("AI-powered Indian currency authentication. Upload a note image for instant verification.")
+st.caption(
+    "AI-powered Indian currency authentication. Upload a note image for instant verification."
+)
 
 # How It Works section
 with st.expander("How CURRENCYGuard Works", expanded=False):
@@ -66,7 +66,7 @@ with st.sidebar:
     denomination = st.selectbox(
         "Denomination (optional)",
         ["unknown", "50", "100", "200", "500", "2000"],
-        help="Select denomination or let AI detect automatically"
+        help="Select denomination or let AI detect automatically",
     )
     st.divider()
     st.info("""**How to get best results:**
@@ -86,18 +86,18 @@ with col1:
         "Upload currency note image",
         type=["jpg", "jpeg", "png"],
         help="JPG or PNG, max 10MB",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
     )
 
     if uploaded_file:
         st.image(uploaded_file, caption="Uploaded note", use_column_width=True)
-        st.caption(f"File: {uploaded_file.name} ({uploaded_file.size/1024:.1f} KB)")
+        st.caption(f"File: {uploaded_file.name} ({uploaded_file.size / 1024:.1f} KB)")
 
     analyze_clicked = st.button(
         "🔍 Authenticate Note",
         type="primary",
         use_container_width=True,
-        disabled=uploaded_file is None
+        disabled=uploaded_file is None,
     )
 
 with col2:
@@ -109,9 +109,15 @@ with col2:
                 uploaded_file.seek(0)
                 response = httpx.post(
                     f"{BACKEND_URL}/api/currencyguard/analyze",
-                    files={"file": (uploaded_file.name, uploaded_file.read(), uploaded_file.type)},
+                    files={
+                        "file": (
+                            uploaded_file.name,
+                            uploaded_file.read(),
+                            uploaded_file.type,
+                        )
+                    },
                     data={"denomination": denomination},
-                    timeout=60.0
+                    timeout=60.0,
                 )
 
                 if response.status_code == 200:
@@ -121,17 +127,20 @@ with col2:
                         verdict, ("❓", "#e2e3e5", "#383d41", "")
                     )
 
-                    st.markdown(f"""
+                    st.markdown(
+                        f"""
                     <div style="background:{bg}; padding:20px; border-radius:10px; margin-bottom:16px;">
                         <h2 style="margin:0; color:{text_color};">{emoji} {verdict}</h2>
                         <p style="margin:4px 0; color:{text_color};">{subtitle}</p>
                         <p style="margin:4px 0; color:{text_color}; font-size:13px;">
-                            Confidence: {data['confidence']:.1%} | 
-                            Denomination: ₹{data.get('denomination', 'Unknown')} |
-                            ID: {data['analysis_id']}
+                            Confidence: {data["confidence"]:.1%} | 
+                            Denomination: ₹{data.get("denomination", "Unknown")} |
+                            ID: {data["analysis_id"]}
                         </p>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """,
+                        unsafe_allow_html=True,
+                    )
 
                     st.markdown(f"**AI Reasoning:** {data['ai_reasoning']}")
                     if data.get("risk_summary") and data["risk_summary"] != "NONE":
@@ -144,7 +153,7 @@ with col2:
                         conf = check["confidence"]
                         with st.expander(
                             f"{icon} {check['feature_name']} — {conf:.1%} confidence",
-                            expanded=not passed
+                            expanded=not passed,
                         ):
                             st.write(check["details"])
 
@@ -152,7 +161,7 @@ with col2:
                         st.divider()
                         report_resp = httpx.get(
                             f"{BACKEND_URL}/api/currencyguard/report/{data['analysis_id']}",
-                            timeout=30.0
+                            timeout=30.0,
                         )
                         if report_resp.status_code == 200:
                             st.download_button(
@@ -160,27 +169,34 @@ with col2:
                                 data=report_resp.content,
                                 file_name=f"SENTINEL_Currency_{data['analysis_id']}.pdf",
                                 mime="application/pdf",
-                                use_container_width=True
+                                use_container_width=True,
                             )
 
                 else:
                     st.error(f"Backend error: {response.status_code} — {response.text}")
 
             except httpx.ConnectError:
-                st.error("Cannot connect to SENTINEL backend. Ensure backend is running on port 8000.")
+                st.error(
+                    "Cannot connect to SENTINEL backend. Ensure backend is running on port 8000."
+                )
             except httpx.TimeoutException:
-                st.error("Analysis timed out. The image may be too large or complex. Try a smaller image.")
+                st.error(
+                    "Analysis timed out. The image may be too large or complex. Try a smaller image."
+                )
             except Exception as e:
                 st.error(f"Analysis failed: {str(e)}")
     else:
-        st.markdown("""
+        st.markdown(
+            """
         <div style="background:#f8f9fa; padding:40px; border-radius:8px; 
                     text-align:center; color:#6c757d;">
             <h3>Awaiting Upload</h3>
             <p>Upload a currency note image on the left</p>
             <p>Supports ₹50 · ₹100 · ₹200 · ₹500 · ₹2000</p>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 st.divider()
 st.caption(

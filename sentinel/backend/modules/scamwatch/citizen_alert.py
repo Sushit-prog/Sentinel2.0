@@ -2,10 +2,12 @@
 
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 
 from backend.models.scam_models import (
-    CitizenAlert, EmergencyContact, MHAAlertPayload, ScamAnalysisResponse
+    CitizenAlert,
+    EmergencyContact,
+    MHAAlertPayload,
+    ScamAnalysisResponse,
 )
 
 # Emergency contacts — static reference data
@@ -124,7 +126,7 @@ def build_citizen_alert(
     # One-line verdict
     one_line = VERDICT_MAP.get(
         scam_type,
-        f"This appears to be a {scam_type.replace('_', ' ')} scam. Do not transfer any money."
+        f"This appears to be a {scam_type.replace('_', ' ')} scam. Do not transfer any money.",
     )
     # Escalate verdict language for CRITICAL
     if risk_level == "CRITICAL" and scam_type in VERDICT_MAP:
@@ -167,6 +169,7 @@ def build_citizen_alert(
     if language and language != "en" and not translated_verdict:
         try:
             from backend.core.translation import translate_verdict
+
             translated = translate_verdict(
                 one_line_verdict=one_line,
                 recommended_actions=actions[:3],

@@ -4,81 +4,123 @@ SCAM_PATTERNS = {
     "digital_arrest": {
         "description": "Fraudster impersonates CBI, ED, Customs, or police officer and claims victim is under digital arrest",
         "keywords": [
-            "digital arrest", "CBI", "ED officer", "customs department",
-            "your parcel contains drugs", "money laundering", "arrest warrant",
-            "do not tell anyone", "stay on video call", "FIR registered against you",
-            "Supreme Court order", "RBI freeze", "account frozen by court"
+            "digital arrest",
+            "CBI",
+            "ED officer",
+            "customs department",
+            "your parcel contains drugs",
+            "money laundering",
+            "arrest warrant",
+            "do not tell anyone",
+            "stay on video call",
+            "FIR registered against you",
+            "Supreme Court order",
+            "RBI freeze",
+            "account frozen by court",
         ],
         "severity": "CRITICAL",
         "typical_channel": "video_call",
-        "modus_operandi": "Victim kept on video call for hours/days, psychologically pressured to transfer money"
+        "modus_operandi": "Victim kept on video call for hours/days, psychologically pressured to transfer money",
     },
     "fake_kyc": {
         "description": "Fraudster claims bank KYC is expired and account will be blocked",
         "keywords": [
-            "KYC expired", "account will be blocked", "update KYC immediately",
-            "click link to update", "OTP required for KYC", "UIDAI notice",
-            "Aadhaar verification pending", "account suspended KYC"
+            "KYC expired",
+            "account will be blocked",
+            "update KYC immediately",
+            "click link to update",
+            "OTP required for KYC",
+            "UIDAI notice",
+            "Aadhaar verification pending",
+            "account suspended KYC",
         ],
         "severity": "HIGH",
         "typical_channel": "sms",
-        "modus_operandi": "Victim clicks phishing link and enters banking credentials"
+        "modus_operandi": "Victim clicks phishing link and enters banking credentials",
     },
     "fake_investment": {
         "description": "Fraudulent investment scheme promising high returns",
         "keywords": [
-            "guaranteed returns", "40% monthly profit", "crypto investment",
-            "stock tips", "insider trading", "double your money",
-            "limited time offer", "WhatsApp investment group", "Telegram channel profit"
+            "guaranteed returns",
+            "40% monthly profit",
+            "crypto investment",
+            "stock tips",
+            "insider trading",
+            "double your money",
+            "limited time offer",
+            "WhatsApp investment group",
+            "Telegram channel profit",
         ],
         "severity": "HIGH",
         "typical_channel": "whatsapp",
-        "modus_operandi": "Victim lured into fake trading platform, money deposited cannot be withdrawn"
+        "modus_operandi": "Victim lured into fake trading platform, money deposited cannot be withdrawn",
     },
     "fake_job": {
         "description": "Fake job offer requiring registration fee or personal documents",
         "keywords": [
-            "work from home", "part time job", "earn 5000 daily",
-            "registration fee", "security deposit", "send Aadhaar copy",
-            "HR department", "joining fee", "task based earning"
+            "work from home",
+            "part time job",
+            "earn 5000 daily",
+            "registration fee",
+            "security deposit",
+            "send Aadhaar copy",
+            "HR department",
+            "joining fee",
+            "task based earning",
         ],
         "severity": "MEDIUM",
         "typical_channel": "whatsapp",
-        "modus_operandi": "Victim pays registration fee or submits documents for identity theft"
+        "modus_operandi": "Victim pays registration fee or submits documents for identity theft",
     },
     "fake_lottery": {
         "description": "Fake prize or lottery win requiring processing fee",
         "keywords": [
-            "you have won", "lucky draw", "prize money", "KBC winner",
-            "processing fee", "claim your prize", "government lottery",
-            "Rs 25 lakh prize", "send fee to claim"
+            "you have won",
+            "lucky draw",
+            "prize money",
+            "KBC winner",
+            "processing fee",
+            "claim your prize",
+            "government lottery",
+            "Rs 25 lakh prize",
+            "send fee to claim",
         ],
         "severity": "MEDIUM",
         "typical_channel": "sms",
-        "modus_operandi": "Victim pays processing fee to claim non-existent prize"
+        "modus_operandi": "Victim pays processing fee to claim non-existent prize",
     },
     "impersonation": {
         "description": "Fraudster impersonates bank official, telecom company, or government body",
         "keywords": [
-            "calling from SBI", "RBI official", "TRAI notice",
-            "your number will be blocked", "telecom department",
-            "calling from Amazon", "refund processing", "IRCTC refund"
+            "calling from SBI",
+            "RBI official",
+            "TRAI notice",
+            "your number will be blocked",
+            "telecom department",
+            "calling from Amazon",
+            "refund processing",
+            "IRCTC refund",
         ],
         "severity": "HIGH",
         "typical_channel": "call",
-        "modus_operandi": "Victim tricked into sharing OTP or installing remote access app"
+        "modus_operandi": "Victim tricked into sharing OTP or installing remote access app",
     },
     "romance_scam": {
         "description": "Fake romantic relationship to extract money",
         "keywords": [
-            "met online", "foreign national", "stuck at airport",
-            "send money urgently", "medical emergency abroad",
-            "customs clearance fee", "visa fee", "will meet you soon"
+            "met online",
+            "foreign national",
+            "stuck at airport",
+            "send money urgently",
+            "medical emergency abroad",
+            "customs clearance fee",
+            "visa fee",
+            "will meet you soon",
         ],
         "severity": "HIGH",
         "typical_channel": "social_media",
-        "modus_operandi": "Victim develops emotional attachment then is asked for money"
-    }
+        "modus_operandi": "Victim develops emotional attachment then is asked for money",
+    },
 }
 
 SAFE_INDICATORS = [
@@ -87,17 +129,35 @@ SAFE_INDICATORS = [
     "no government agency conducts digital arrest",
     "legitimate companies do not ask for registration fees",
     "RBI never contacts individuals directly",
-    "TRAI does not block numbers without notice"
+    "TRAI does not block numbers without notice",
 ]
 
 URGENCY_PHRASES = [
-    "immediately", "right now", "within 2 hours", "account will be blocked",
-    "last warning", "urgent", "do not delay", "expire today",
-    "police will come", "warrant issued", "within 24 hours"
+    "immediately",
+    "right now",
+    "within 2 hours",
+    "account will be blocked",
+    "last warning",
+    "urgent",
+    "do not delay",
+    "expire today",
+    "police will come",
+    "warrant issued",
+    "within 24 hours",
 ]
 
 AUTHORITY_IMPERSONATION_TERMS = [
-    "CBI", "ED", "Enforcement Directorate", "Income Tax Department",
-    "Supreme Court", "High Court", "RBI", "SEBI", "TRAI", "Ministry of Home Affairs",
-    "Narcotics Department", "Customs", "Police Commissioner"
+    "CBI",
+    "ED",
+    "Enforcement Directorate",
+    "Income Tax Department",
+    "Supreme Court",
+    "High Court",
+    "RBI",
+    "SEBI",
+    "TRAI",
+    "Ministry of Home Affairs",
+    "Narcotics Department",
+    "Customs",
+    "Police Commissioner",
 ]

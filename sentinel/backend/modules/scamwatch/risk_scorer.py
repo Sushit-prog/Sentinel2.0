@@ -45,10 +45,15 @@ class RiskScorer:
             llm_boost = -0.10
 
         final_score = min(
-            base_score + keyword_boost + urgency_boost +
-            authority_boost + url_boost + otp_boost +
-            money_boost + llm_boost,
-            1.0
+            base_score
+            + keyword_boost
+            + urgency_boost
+            + authority_boost
+            + url_boost
+            + otp_boost
+            + money_boost
+            + llm_boost,
+            1.0,
         )
 
         if final_score >= 0.80:
@@ -72,5 +77,5 @@ class RiskScorer:
                 "otp_boost": round(otp_boost, 3),
                 "money_boost": round(money_boost, 3),
                 "llm_boost": round(llm_boost, 3),
-            }
+            },
         }

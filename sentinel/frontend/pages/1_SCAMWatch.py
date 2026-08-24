@@ -2,25 +2,24 @@
 
 import streamlit as st
 import httpx
-import json
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
 from backend.config import get_settings
 
-st.set_page_config(
-    page_title="SCAMWatch — SENTINEL",
-    page_icon="🔍",
-    layout="wide"
-)
+st.set_page_config(page_title="SCAMWatch — SENTINEL", page_icon="🔍", layout="wide")
 
 settings = get_settings()
 BACKEND_URL = settings.backend_url
 
 st.title("🔍 SCAMWatch")
-st.caption("AI-powered scam detection. Paste any suspicious message or call transcript below.")
+st.caption(
+    "AI-powered scam detection. Paste any suspicious message or call transcript below."
+)
 
 with st.expander("How SCAMWatch Works", expanded=False):
     st.markdown("""
@@ -48,15 +47,13 @@ to open 47 illegal bank accounts involved in money laundering. An arrest warrant
 in your name. You are under digital arrest. Do not disconnect the call or inform anyone. 
 Our officer will contact you on video call. You must transfer Rs 5 lakh as security deposit 
 to prove your innocence. This is Supreme Court order 2024.""",
-
     "Fake KYC SMS": """URGENT: Your SBI account KYC is expired. Your account will be blocked within 
 24 hours. Click here to update KYC immediately: http://sbi-kyc-update.xyz/verify 
 Enter your account details and OTP to restore access. Ignore this message at your own risk.""",
-
     "Fake Investment": """Hello! I am from WealthGrow Investment Group. Our members are earning 
 40% monthly returns through our exclusive crypto arbitrage program. 
 Only 5 slots remaining. Minimum investment Rs 10,000. WhatsApp investment group 
-has made 500 members rich already. Guaranteed returns. Join today, limited time offer."""
+has made 500 members rich already. Guaranteed returns. Join today, limited time offer.""",
 }
 
 with st.sidebar:
@@ -64,13 +61,19 @@ with st.sidebar:
     channel = st.selectbox(
         "Input Channel",
         ["unknown", "whatsapp", "sms", "call", "email", "social_media"],
-        help="Where did you receive this message?"
+        help="Where did you receive this message?",
     )
     language = st.selectbox(
         "Output Language",
         ["en", "hi", "ta", "bn", "te"],
-        format_func=lambda x: {"en": "English", "hi": "Hindi", "ta": "Tamil", "bn": "Bengali", "te": "Telugu"}.get(x, x),
-        help="Language for verdict and advisory text"
+        format_func=lambda x: {
+            "en": "English",
+            "hi": "Hindi",
+            "ta": "Tamil",
+            "bn": "Bengali",
+            "te": "Telugu",
+        }.get(x, x),
+        help="Language for verdict and advisory text",
     )
     st.divider()
     st.header("Sample Scams")
@@ -92,7 +95,7 @@ with col1:
         value=default_text,
         height=250,
         placeholder="Paste WhatsApp message, SMS, email, or call transcript here...",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
     )
     st.caption(f"{len(text_input)} characters")
 
@@ -109,7 +112,7 @@ with col1:
         "🔍 Analyze for Scam",
         type="primary",
         use_container_width=True,
-        disabled=len(text_input) < 10
+        disabled=len(text_input) < 10,
     )
 
 with col2:
@@ -124,7 +127,7 @@ with col2:
                 response = httpx.post(
                     f"{BACKEND_URL}/api/scamwatch/analyze",
                     json={"text": text_input, "channel": channel, "language": language},
-                    timeout=60.0
+                    timeout=60.0,
                 )
                 if response.status_code == 200:
                     data = response.json()
@@ -134,7 +137,9 @@ with col2:
                     st.error(f"Backend error: {response.status_code}")
                     st.session_state["analyzing"] = False
             except httpx.ConnectError:
-                st.error("Cannot connect to SENTINEL backend. Ensure backend is running on port 8000.")
+                st.error(
+                    "Cannot connect to SENTINEL backend. Ensure backend is running on port 8000."
+                )
                 st.session_state["analyzing"] = False
             except httpx.TimeoutException:
                 st.error("Analysis timed out. Please try again with shorter text.")
@@ -147,15 +152,20 @@ with col2:
         # ── RISK BADGE (prominent) ───────────────────────────────────────────
         risk_level = data["risk_level"]
         emoji, color, bg = RISK_COLORS.get(risk_level, ("⚪", "gray", "#f8f9fa"))
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style="background:{bg}; padding:20px; border-radius:10px; border-left:6px solid {color}; margin-bottom:16px;">
             <h2 style="margin:0; color:#1a1a1a;">{emoji} {risk_level} RISK</h2>
-            <p style="margin:4px 0 0; font-size:14px; color:#333333;">Risk Score: {data['risk_score']:.2f} / 1.00</p>
+            <p style="margin:4px 0 0; font-size:14px; color:#333333;">Risk Score: {data["risk_score"]:.2f} / 1.00</p>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         if data.get("scam_type"):
-            st.info(f"**Scam Type Detected:** {data['scam_type'].replace('_', ' ').title()}")
+            st.info(
+                f"**Scam Type Detected:** {data['scam_type'].replace('_', ' ').title()}"
+            )
 
         st.markdown(f"**Verdict:** {data['verdict']}")
         st.markdown(f"**Recommended Action:** {data['recommended_action']}")
@@ -166,16 +176,26 @@ with col2:
             st.info(f"**Translated ({lang_name}):** {data['translated_verdict']}")
 
         if data.get("similar_patterns_found", 0) > 0:
-            st.warning(f"{data['similar_patterns_found']} similar scam patterns found in intelligence database")
+            st.warning(
+                f"{data['similar_patterns_found']} similar scam patterns found in intelligence database"
+            )
 
         # ── CITIZEN ALERT (prominent, right after verdict) ────────────────────
         st.markdown("---")
         st.subheader("🚨 Citizen Alert")
 
-        if st.button("📤 Generate Citizen Alert", type="primary", use_container_width=True, key="gen_alert"):
+        if st.button(
+            "📤 Generate Citizen Alert",
+            type="primary",
+            use_container_width=True,
+            key="gen_alert",
+        ):
             with st.spinner("Generating citizen alert..."):
                 try:
-                    alert_resp = httpx.post(f"{BACKEND_URL}/api/scamwatch/alert/{data['analysis_id']}", timeout=15.0)
+                    alert_resp = httpx.post(
+                        f"{BACKEND_URL}/api/scamwatch/alert/{data['analysis_id']}",
+                        timeout=15.0,
+                    )
                     if alert_resp.status_code == 200:
                         st.session_state["citizen_alert"] = alert_resp.json()
                         st.session_state["alert_analysis_id"] = data["analysis_id"]
@@ -190,16 +210,25 @@ with col2:
         if alert and alert_aid == data["analysis_id"]:
             # ── VERDICT BANNER ────────────────────────────────────────────────
             alert_rl = alert.get("risk_level", "MEDIUM")
-            a_emoji, a_color, a_bg = RISK_COLORS.get(alert_rl, ("⚪", "gray", "#f8f9fa"))
-            display_verdict = alert.get("translated_verdict") or alert.get("one_line_verdict", "")
-            display_actions = alert.get("translated_actions") or alert.get("recommended_actions", [])
+            a_emoji, a_color, a_bg = RISK_COLORS.get(
+                alert_rl, ("⚪", "gray", "#f8f9fa")
+            )
+            display_verdict = alert.get("translated_verdict") or alert.get(
+                "one_line_verdict", ""
+            )
+            display_actions = alert.get("translated_actions") or alert.get(
+                "recommended_actions", []
+            )
 
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div style="background:{a_bg}; padding:20px; border-radius:10px; border-left:6px solid {a_color}; margin:12px 0;">
                 <div style="font-size:0.7rem; color:#555555; text-transform:uppercase; letter-spacing:2px;">VERDICT</div>
                 <div style="font-size:1.3rem; font-weight:bold; color:#1a1a1a;">{a_emoji} {display_verdict}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
 
             # ── QUICK ACTIONS (prominent, side by side) ───────────────────────
             st.markdown("**Recommended Actions:**")
@@ -213,24 +242,30 @@ with col2:
             col_report, col_block = st.columns(2)
 
             with col_report:
-                st.markdown("""
+                st.markdown(
+                    """
                 <div style="background:#1a472a; padding:20px; border-radius:10px; text-align:center; margin-bottom:8px;">
                     <div style="font-size:2rem;">📝</div>
                     <div style="color:white; font-weight:bold; font-size:1.1rem; margin:8px 0;">File Complaint</div>
                     <div style="color:#a7f3d0; font-size:0.85rem;">Report to NCRB Cyber Crime Portal</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
                 st.markdown("[Open cybercrime.gov.in](https://cybercrime.gov.in)")
                 st.caption("Paste the report summary below when filing your complaint.")
 
             with col_block:
-                st.markdown("""
+                st.markdown(
+                    """
                 <div style="background:#1a3a5c; padding:20px; border-radius:10px; text-align:center; margin-bottom:8px;">
                     <div style="font-size:2rem;">📱</div>
                     <div style="color:white; font-weight:bold; font-size:1.1rem; margin:8px 0;">Block Scammer</div>
                     <div style="color:#93c5fd; font-size:0.85rem;">Report to Sanchar Saathi / TRAI</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
                 st.markdown("[Open sancharsaathi.gov.in](https://sancharsaathi.gov.in)")
                 st.caption("Use Chakshu portal to report fraud calls/SMS.")
 
@@ -238,23 +273,33 @@ with col2:
             if data.get("indicators"):
                 with st.expander("Risk Indicators (Details)", expanded=False):
                     for ind in data["indicators"]:
-                        ind_emoji, ind_color, ind_bg = RISK_COLORS.get(ind["severity"], ("⚪", "gray", "#f8f9fa"))
-                        st.markdown(f"""
+                        ind_emoji, ind_color, ind_bg = RISK_COLORS.get(
+                            ind["severity"], ("⚪", "gray", "#f8f9fa")
+                        )
+                        st.markdown(
+                            f"""
                         <div style="background:{ind_bg}; padding:8px; border-radius:6px; margin-bottom:6px;">
-                            <strong style="color:#1a1a1a;">{ind_emoji} {ind['indicator']}</strong> <span style="color:#1a1a1a;">— {ind['severity']}</span><br>
-                            <small style="color:#333333;">{ind['explanation']}</small>
+                            <strong style="color:#1a1a1a;">{ind_emoji} {ind["indicator"]}</strong> <span style="color:#1a1a1a;">— {ind["severity"]}</span><br>
+                            <small style="color:#333333;">{ind["explanation"]}</small>
                         </div>
-                        """, unsafe_allow_html=True)
+                        """,
+                            unsafe_allow_html=True,
+                        )
 
             st.caption(f"Analysis ID: {data['analysis_id']}")
     else:
-        st.markdown("""
+        st.markdown(
+            """
         <div style="background:#f8f9fa; padding:40px; border-radius:8px; text-align:center; color:#6c757d;">
             <h3>Awaiting Input</h3>
             <p>Paste a suspicious message on the left and click Analyze</p>
             <p>Or load a sample from the sidebar</p>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 st.divider()
-st.caption("SENTINEL SCAMWatch — ET AI Hackathon 2.0 | No government agency conducts digital arrests.")
+st.caption(
+    "SENTINEL SCAMWatch — ET AI Hackathon 2.0 | No government agency conducts digital arrests."
+)

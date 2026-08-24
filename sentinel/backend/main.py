@@ -1,73 +1,72 @@
-"""SENTINEL — Digital Public Safety Intelligence Platform.
+"""SENTINEL API - evidence-grounded fraud intelligence.
 
-An AI-powered platform equipping law enforcement, financial institutions, and citizens
-with proactive tools to detect, disrupt, and respond to digital fraud networks,
-counterfeit currency circulation, and organised scam operations. Built for the
-ET AI Hackathon 2.0 — AI for Digital Public Safety.
+Every analytical claim returned by this service carries citations,
+calibrated confidence and a persisted audit trail.
 """
 
 import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.api import scamwatch, currencyguard, fraudgraph
-from backend.api.intelligence import router as intelligence_router
-from backend.api.geo import router as geo_router
-from backend.config import get_settings
+
+from backend.api.middleware import (
+    ApiKeyMiddleware,
+    RateLimitMiddleware,
+    RequestContextMiddleware,
+)
+from backend.api.scamwatch import router as scamwatch_router
+from backend.core.config import get_settings
+from backend.core.logging import configure_logging
+from backend.db.base import init_db
 
 settings = get_settings()
-
-logging.basicConfig(level=settings.log_level)
+configure_logging(level=settings.log_level, json_logs=settings.log_json)
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    init_db()
+    logger.info(
+        "sentinel api started env=%s models=%s",
+        settings.app_env,
+        {"strong": settings.llm_strong_model, "fast": settings.llm_fast_model},
+    )
+    yield
+
 
 app = FastAPI(
     title="SENTINEL API",
+    version="2.0",
     description=(
-        "SENTINEL is a Digital Public Safety Intelligence Platform that combines "
-        "AI-powered scam detection (SCAMWatch), computer vision currency authentication "
-        "(CURRENCYGuard), graph-based fraud network mapping (FRAUDGraph), geospatial "
-        "threat intelligence (GeoIntel), and a cross-module intelligence dashboard. "
-        "All modules share a ChromaDB intelligence store for cross-module correlation "
-        "and predictive threat neutralisation."
+        "Evidence-grounded fraud investigation API. Scam triage with "
+        "quarantined extraction, cited verdicts, verification sampling and "
+        "a deterministic emission policy."
     ),
-    version="0.3",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(ApiKeyMiddleware)
+app.add_middleware(RequestContextMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.cors_origin_list,
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["X-API-Key", "X-Request-ID", "Content-Type"],
+    expose_headers=["X-Request-ID", "X-RateLimit-Limit", "X-RateLimit-Remaining"],
 )
 
-app.include_router(
-    scamwatch.router,
-    prefix="/api/scamwatch",
-    tags=["SCAMWatch"],
-)
-app.include_router(
-    currencyguard.router,
-    prefix="/api/currencyguard",
-    tags=["CURRENCYGuard"],
-)
-app.include_router(
-    fraudgraph.router,
-    prefix="/api/fraudgraph",
-    tags=["FRAUDGraph"],
-)
-app.include_router(intelligence_router)
-app.include_router(geo_router)
+app.include_router(scamwatch_router, prefix="/api/scamwatch", tags=["SCAMWatch"])
 
 
 @app.get("/", tags=["System"])
 def root():
-    """SENTINEL platform root — confirms API is operational."""
-    return {"status": "SENTINEL operational", "version": "0.3"}
+    return {"service": "sentinel", "version": "2.0", "status": "operational"}
 
 
 @app.get("/health", tags=["System"])
 def health():
-    """Health check endpoint for monitoring and load balancers."""
-    return {"status": "healthy"}
+    return {"status": "healthy", "version": "2.0"}

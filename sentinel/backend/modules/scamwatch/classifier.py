@@ -1,11 +1,11 @@
 """Scam pattern classifier for SCAMWatch."""
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict
 from backend.modules.scamwatch.patterns import (
     SCAM_PATTERNS,
     URGENCY_PHRASES,
-    AUTHORITY_IMPERSONATION_TERMS
+    AUTHORITY_IMPERSONATION_TERMS,
 )
 
 logger = logging.getLogger(__name__)
@@ -27,8 +27,7 @@ class ScamClassifier:
 
         for scam_type, pattern_data in SCAM_PATTERNS.items():
             matches = [
-                kw for kw in pattern_data["keywords"]
-                if kw.lower() in text_lower
+                kw for kw in pattern_data["keywords"] if kw.lower() in text_lower
             ]
             if len(matches) > max_matches:
                 max_matches = len(matches)
@@ -36,13 +35,11 @@ class ScamClassifier:
                 matched_keywords = matches
 
         urgency_signals = [
-            phrase for phrase in URGENCY_PHRASES
-            if phrase.lower() in text_lower
+            phrase for phrase in URGENCY_PHRASES if phrase.lower() in text_lower
         ]
 
         authority_signals = [
-            term for term in AUTHORITY_IMPERSONATION_TERMS
-            if term.lower() in text_lower
+            term for term in AUTHORITY_IMPERSONATION_TERMS if term.lower() in text_lower
         ]
 
         has_url = any(
@@ -58,8 +55,14 @@ class ScamClassifier:
         has_money_request = any(
             phrase in text_lower
             for phrase in [
-                "transfer", "send money", "pay", "deposit",
-                "upi", "neft", "rtgs", "wallet"
+                "transfer",
+                "send money",
+                "pay",
+                "deposit",
+                "upi",
+                "neft",
+                "rtgs",
+                "wallet",
             ]
         )
 
@@ -72,5 +75,5 @@ class ScamClassifier:
             "has_url": has_url,
             "has_otp_request": has_otp_request,
             "has_money_request": has_money_request,
-            "pattern_data": SCAM_PATTERNS.get(matched_type, {}) if matched_type else {}
+            "pattern_data": SCAM_PATTERNS.get(matched_type, {}) if matched_type else {},
         }

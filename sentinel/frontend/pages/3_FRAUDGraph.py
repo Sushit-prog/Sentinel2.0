@@ -1,23 +1,21 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import requests
-import json
 import os
 import sys
 
 # Add project root to Python path for backend imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
 API_BASE = "http://localhost:8000"
 
-st.set_page_config(
-    page_title="FRAUDGraph — SENTINEL",
-    page_icon="🕸️",
-    layout="wide"
-)
+st.set_page_config(page_title="FRAUDGraph — SENTINEL", page_icon="🕸️", layout="wide")
 
 # ── HEADER ───────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
 .sentinel-header {
     background: linear-gradient(135deg, #0E1117 0%, #1a1a2e 100%);
@@ -57,7 +55,9 @@ st.markdown("""
     <h2 style="color:#00aaff;margin:0">🕸️ FRAUDGraph</h2>
     <p style="color:#888;margin:4px 0 0">Graph AI Fraud Network Mapping &nbsp;|&nbsp; Law Enforcement Intelligence Module</p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # How It Works section
 with st.expander("How FRAUDGraph Works", expanded=False):
@@ -91,7 +91,7 @@ with st.container():
                 placeholder="One per line:\n9876543210\n8765432109",
                 height=120,
                 help="Indian or international phone numbers involved in the fraud",
-                key="phones_area"
+                key="phones_area",
             )
 
         with col2:
@@ -101,7 +101,7 @@ with st.container():
                 placeholder="One per line:\nACC123456789\nuser@upi",
                 height=120,
                 help="Bank account numbers, UPI IDs, or wallet IDs",
-                key="accounts_area"
+                key="accounts_area",
             )
 
         with col3:
@@ -111,7 +111,7 @@ with st.container():
                 placeholder="One per line:\nIMEI:359847XXXXXX\nMAC:AA:BB:CC",
                 height=120,
                 help="Device fingerprints, IMEI numbers, or MAC addresses",
-                key="devices_area"
+                key="devices_area",
             )
 
         victim_statement = st.text_area(
@@ -120,12 +120,13 @@ with st.container():
             placeholder="Describe the fraud in detail. Include any phone numbers, accounts, or device details mentioned by the victim. The AI will extract and link entities automatically...",
             height=140,
             help="Free text victim statement. LLM will extract entities and relationships automatically.",
-            key="statement_area"
+            key="statement_area",
         )
 
     with col_legend:
         st.markdown("#### 🎨 Entity Legend")
-        st.markdown("""
+        st.markdown(
+            """
         <div style="margin-top:8px">
         <div class="entity-tag tag-PHONE">● PHONE</div><br/>
         <div class="entity-tag tag-ACCOUNT">● ACCOUNT</div><br/>
@@ -133,12 +134,22 @@ with st.container():
         <div class="entity-tag tag-VICTIM">● VICTIM</div><br/>
         <div class="entity-tag tag-LOCATION">● LOCATION</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         st.markdown("---")
         st.markdown("**Risk Levels**")
-        for level, color in [("CRITICAL", "#CC0000"), ("HIGH", "#CC5500"), ("MEDIUM", "#AA8800"), ("LOW", "#1B7F2A")]:
-            st.markdown(f'<span style="color:{color};font-weight:bold">▌</span> {level}', unsafe_allow_html=True)
+        for level, color in [
+            ("CRITICAL", "#CC0000"),
+            ("HIGH", "#CC5500"),
+            ("MEDIUM", "#AA8800"),
+            ("LOW", "#1B7F2A"),
+        ]:
+            st.markdown(
+                f'<span style="color:{color};font-weight:bold">▌</span> {level}',
+                unsafe_allow_html=True,
+            )
 
 # ── ANALYZE BUTTON ────────────────────────────────────────────────────────────
 st.markdown("---")
@@ -146,9 +157,7 @@ col_btn, col_status = st.columns([1, 3])
 
 with col_btn:
     analyze_clicked = st.button(
-        "🕵️ Build Fraud Network",
-        type="primary",
-        use_container_width=True
+        "🕵️ Build Fraud Network", type="primary", use_container_width=True
     )
 
 # ── SAMPLE DATA ───────────────────────────────────────────────────────────────
@@ -199,7 +208,9 @@ if analyze_clicked:
     devices = [d.strip() for d in devices_input.splitlines() if d.strip()]
 
     if not any([phones, accounts, devices, victim_statement.strip()]):
-        st.warning("⚠️ Please provide at least one phone number, account ID, device ID, or victim statement.")
+        st.warning(
+            "⚠️ Please provide at least one phone number, account ID, device ID, or victim statement."
+        )
         st.stop()
 
     with st.spinner("🕵️ Building fraud network graph..."):
@@ -210,15 +221,17 @@ if analyze_clicked:
                     "phones": phones,
                     "accounts": accounts,
                     "devices": devices,
-                    "victim_statement": victim_statement
+                    "victim_statement": victim_statement,
                 },
-                timeout=120
+                timeout=120,
             )
             response.raise_for_status()
             data = response.json()
 
         except requests.exceptions.ConnectionError:
-            st.error("❌ Cannot connect to SENTINEL backend. Start it with: `uvicorn backend.main:app --reload --port 8000`")
+            st.error(
+                "❌ Cannot connect to SENTINEL backend. Start it with: `uvicorn backend.main:app --reload --port 8000`"
+            )
             st.stop()
         except requests.exceptions.Timeout:
             st.error("⏱️ Analysis timed out. The LLM is processing — try again.")
@@ -232,17 +245,23 @@ if analyze_clicked:
     risk_score = data.get("risk_score", 0.0)
     session_id = data.get("session_id", "")
 
-    risk_colors = {"CRITICAL": "#CC0000", "HIGH": "#CC5500", "MEDIUM": "#AA8800", "LOW": "#1B7F2A"}
-    risk_icons  = {"CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🟢"}
+    risk_colors = {
+        "CRITICAL": "#CC0000",
+        "HIGH": "#CC5500",
+        "MEDIUM": "#AA8800",
+        "LOW": "#1B7F2A",
+    }
+    risk_icons = {"CRITICAL": "🔴", "HIGH": "🟠", "MEDIUM": "🟡", "LOW": "🟢"}
     rc = risk_colors.get(risk_level, "#888")
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style="background:linear-gradient(135deg,{rc}22,{rc}11);border:2px solid {rc};
                 border-radius:10px;padding:16px 24px;margin:16px 0;display:flex;
                 align-items:center;justify-content:space-between">
         <div>
             <div style="font-size:0.8rem;color:#888;text-transform:uppercase;letter-spacing:2px">Risk Assessment</div>
-            <div style="font-size:2rem;font-weight:bold;color:{rc}">{risk_icons.get(risk_level,'⚪')} {risk_level}</div>
+            <div style="font-size:2rem;font-weight:bold;color:{rc}">{risk_icons.get(risk_level, "⚪")} {risk_level}</div>
         </div>
         <div style="text-align:right">
             <div style="font-size:0.8rem;color:#888">Risk Score</div>
@@ -250,16 +269,20 @@ if analyze_clicked:
         </div>
         <div style="text-align:right">
             <div style="font-size:0.8rem;color:#888">Network Stats</div>
-            <div style="color:#ccc">{len(data.get('entities', []))} entities &nbsp;|&nbsp; {len(data.get('relationships', []))} links &nbsp;|&nbsp; {len(data.get('clusters', []))} rings</div>
+            <div style="color:#ccc">{len(data.get("entities", []))} entities &nbsp;|&nbsp; {len(data.get("relationships", []))} links &nbsp;|&nbsp; {len(data.get("clusters", []))} rings</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     neo4j_status = data.get("neo4j_connected", False)
     if neo4j_status:
         st.success("✅ Neo4j Aura: Graph persisted to cloud database")
     else:
-        st.info("ℹ️ Neo4j: Running in in-memory mode (configure NEO4J_URI in .env for persistence)")
+        st.info(
+            "ℹ️ Neo4j: Running in in-memory mode (configure NEO4J_URI in .env for persistence)"
+        )
 
     # ── NETWORK GRAPH ─────────────────────────────────────────────────────────
     st.markdown("### 🕸️ Fraud Network Graph")
@@ -270,7 +293,9 @@ if analyze_clicked:
         st.warning("Network graph unavailable. Install pyvis: `pip install pyvis`")
 
     # ── TABS: ENTITIES | RINGS | INTELLIGENCE | PDF ───────────────────────────
-    tab1, tab2, tab3, tab4 = st.tabs(["📋 Entities", "🔴 Fraud Rings", "🧠 Intelligence", "📄 Download Report"])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["📋 Entities", "🔴 Fraud Rings", "🧠 Intelligence", "📄 Download Report"]
+    )
 
     with tab1:
         st.markdown("#### Detected Entities")
@@ -296,7 +321,14 @@ if analyze_clicked:
         rels = data.get("relationships", [])
         if rels:
             st.markdown("#### Relationships Mapped")
-            rel_rows = [[r.get("from_id","")[:30], r.get("rel_type",""), r.get("to_id","")[:30]] for r in rels]
+            rel_rows = [
+                [
+                    r.get("from_id", "")[:30],
+                    r.get("rel_type", ""),
+                    r.get("to_id", "")[:30],
+                ]
+                for r in rels
+            ]
             st.table([{"From": r[0], "Relation": r[1], "To": r[2]} for r in rel_rows])
 
     with tab2:
@@ -311,41 +343,68 @@ if analyze_clicked:
                 score = cluster.get("risk_score", 0.0)
                 score_pct = f"{score:.1%}"
 
-                ring_color = "#CC0000" if score >= 0.8 else "#CC5500" if score >= 0.6 else "#AA8800" if score >= 0.35 else "#1B7F2A"
+                ring_color = (
+                    "#CC0000"
+                    if score >= 0.8
+                    else "#CC5500"
+                    if score >= 0.6
+                    else "#AA8800"
+                    if score >= 0.35
+                    else "#1B7F2A"
+                )
 
-                with st.expander(f"🔴 Ring #{cid} — {size} entities — Risk: {score_pct}", expanded=(cid == 1)):
+                with st.expander(
+                    f"🔴 Ring #{cid} — {size} entities — Risk: {score_pct}",
+                    expanded=(cid == 1),
+                ):
                     col_a, col_b, col_c = st.columns(3)
                     col_a.metric("Entities in Ring", size)
                     col_b.metric("Victims Identified", victims)
                     col_c.metric("Hub Node", hub[:25] if hub else "N/A")
-                    st.markdown(f'**Risk Score:** <span style="color:{ring_color};font-weight:bold">{score_pct}</span>', unsafe_allow_html=True)
+                    st.markdown(
+                        f'**Risk Score:** <span style="color:{ring_color};font-weight:bold">{score_pct}</span>',
+                        unsafe_allow_html=True,
+                    )
                     nodes_in_ring = cluster.get("nodes", [])
                     if nodes_in_ring:
-                        st.markdown("**Nodes:** " + " · ".join(f"`{n[:25]}`" for n in nodes_in_ring[:10]))
+                        st.markdown(
+                            "**Nodes:** "
+                            + " · ".join(f"`{n[:25]}`" for n in nodes_in_ring[:10])
+                        )
         else:
-            st.info("No fraud rings detected. A minimum of 2 connected entities is required to form a ring.")
+            st.info(
+                "No fraud rings detected. A minimum of 2 connected entities is required to form a ring."
+            )
 
     with tab3:
         st.markdown("#### Intelligence Summary")
         summary = data.get("llm_summary", "No summary generated.")
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style="background:#111827;border-left:3px solid #00aaff;padding:16px 20px;border-radius:0 8px 8px 0;line-height:1.7;color:#e5e7eb">
-        {summary.replace(chr(10), '<br/>')}
+        {summary.replace(chr(10), "<br/>")}
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         related = data.get("related_threats", [])
         if related:
             st.markdown("#### 🔗 Related Threats (Cross-Module Intelligence)")
-            st.caption("Matching patterns found from SCAMWatch or prior FRAUDGraph sessions")
+            st.caption(
+                "Matching patterns found from SCAMWatch or prior FRAUDGraph sessions"
+            )
             for threat in related:
                 meta = threat.get("metadata", {})
-                st.markdown(f"""
+                st.markdown(
+                    f"""
                 <div style="border:1px solid #333;border-radius:6px;padding:10px 14px;margin:6px 0;background:#0d1117">
-                    <span style="color:#888;font-size:0.75rem">{meta.get('event_type','UNKNOWN')} &nbsp;|&nbsp; Risk: {meta.get('risk_level','?')}</span>
-                    <div style="color:#ccc;font-size:0.85rem;margin-top:4px">{threat.get('content','')[:200]}…</div>
+                    <span style="color:#888;font-size:0.75rem">{meta.get("event_type", "UNKNOWN")} &nbsp;|&nbsp; Risk: {meta.get("risk_level", "?")}</span>
+                    <div style="color:#ccc;font-size:0.85rem;margin-top:4px">{threat.get("content", "")[:200]}…</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
 
     with tab4:
         st.markdown("#### 📄 Download Intelligence Package")
@@ -370,7 +429,7 @@ if analyze_clicked:
                             data=pdf_resp.content,
                             file_name=f"SENTINEL_FRAUD_{session_id[:8].upper()}.pdf",
                             mime="application/pdf",
-                            use_container_width=True
+                            use_container_width=True,
                         )
                     else:
                         st.error("PDF not found on server.")
@@ -387,9 +446,11 @@ if analyze_clicked:
                             data=kit_resp.content,
                             file_name=f"SENTINEL_EVIDENCE_{session_id[:8].upper()}.zip",
                             mime="application/zip",
-                            use_container_width=True
+                            use_container_width=True,
                         )
-                        st.caption("ZIP contains: PDF + Graph HTML + Entity CSV + Analysis JSON + Manifest")
+                        st.caption(
+                            "ZIP contains: PDF + Graph HTML + Entity CSV + Analysis JSON + Manifest"
+                        )
                     else:
                         st.warning("Evidence kit not available.")
                 except Exception as e:
@@ -411,11 +472,14 @@ if analyze_clicked:
 
 # ── EMPTY STATE ───────────────────────────────────────────────────────────────
 else:
-    st.markdown("""
+    st.markdown(
+        """
     <div style="text-align:center;padding:60px 20px;color:#4B5563">
         <div style="font-size:4rem">🕸️</div>
         <h3 style="color:#6B7280">Enter entity data to build the fraud network graph</h3>
         <p>Add phone numbers, bank accounts, device IDs, or paste a victim statement above.<br/>
         The AI will extract entities, map relationships, identify fraud rings, and generate an intelligence report.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )

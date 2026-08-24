@@ -34,3 +34,11 @@ Thumbs.db
 
 # Chroma
 chroma/
+
+# Logs & runtime artifacts
+server.log
+stderr.log
+stdout.log
+*.log
+.mimocode/
+reports/

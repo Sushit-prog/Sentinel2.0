@@ -10,20 +10,20 @@ import streamlit as st
 import httpx
 import sys
 import os
-import time
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
 st.set_page_config(
-    page_title="WhatsApp Shield — SENTINEL",
-    page_icon="💬",
-    layout="wide"
+    page_title="WhatsApp Shield — SENTINEL", page_icon="💬", layout="wide"
 )
 
 API_BASE = "http://localhost:8000"
 
 # ── STYLES ───────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
@@ -81,10 +81,13 @@ footer {visibility: hidden;}
 .risk-MEDIUM   { background: #8B7000; color: white; }
 .risk-LOW      { background: #1B5E20; color: white; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ── HEADER ───────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <div style="background:linear-gradient(135deg,#060B14 0%,#0d1b2a 60%,#060B14 100%);
             border:1px solid #00aaff22;border-radius:12px;padding:24px 28px;margin-bottom:20px;">
     <h1 style="color:#ffffff;margin:0;font-size:1.8rem;letter-spacing:2px;font-weight:900">
@@ -97,7 +100,9 @@ st.markdown("""
         Addresses 'Citizen Fraud Shield (Multi-channel)' requirement
     </p>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ── HOW IT WORKS ─────────────────────────────────────────────────────────────
 with st.expander("How WhatsApp Shield Works", expanded=False):
@@ -127,7 +132,11 @@ st.markdown("### Chat")
 # Initialize chat history
 if "chat_messages" not in st.session_state:
     st.session_state["chat_messages"] = [
-        {"role": "bot", "text": "Hello! I am SENTINEL Shield Bot. Paste any suspicious message and I will analyze it for scams. Stay safe!", "time": "Now"}
+        {
+            "role": "bot",
+            "text": "Hello! I am SENTINEL Shield Bot. Paste any suspicious message and I will analyze it for scams. Stay safe!",
+            "time": "Now",
+        }
     ]
 
 # Display chat history
@@ -135,19 +144,25 @@ chat_container = st.container()
 with chat_container:
     for msg in st.session_state["chat_messages"]:
         if msg["role"] == "user":
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
-                <div class="chat-bubble-user">{msg['text']}</div>
+                <div class="chat-bubble-user">{msg["text"]}</div>
             </div>
-            <div class="chat-time">{msg.get('time', '')}</div>
-            """, unsafe_allow_html=True)
+            <div class="chat-time">{msg.get("time", "")}</div>
+            """,
+                unsafe_allow_html=True,
+            )
         else:
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div style="display:flex;justify-content:flex-start;margin-bottom:4px;">
-                <div class="chat-bubble-bot">{msg['text']}</div>
+                <div class="chat-bubble-bot">{msg["text"]}</div>
             </div>
-            <div class="chat-time">{msg.get('time', '')}</div>
-            """, unsafe_allow_html=True)
+            <div class="chat-time">{msg.get("time", "")}</div>
+            """,
+                unsafe_allow_html=True,
+            )
 
 # ── INPUT AREA ───────────────────────────────────────────────────────────────
 st.markdown("---")
@@ -165,7 +180,7 @@ user_input = st.text_input(
     "Type or paste a suspicious message:",
     value="",
     placeholder="Paste a suspicious WhatsApp message, SMS, or email here...",
-    key="chat_input"
+    key="chat_input",
 )
 
 col_send, col_clear = st.columns([3, 1])
@@ -174,30 +189,28 @@ with col_send:
 with col_clear:
     if st.button("Clear Chat", use_container_width=True):
         st.session_state["chat_messages"] = [
-            {"role": "bot", "text": "Chat cleared. Paste a new suspicious message to analyze.", "time": "Now"}
+            {
+                "role": "bot",
+                "text": "Chat cleared. Paste a new suspicious message to analyze.",
+                "time": "Now",
+            }
         ]
         st.rerun()
 
 # ── PROCESS MESSAGE ──────────────────────────────────────────────────────────
 if send_clicked and user_input:
     # Add user message to chat
-    st.session_state["chat_messages"].append({
-        "role": "user",
-        "text": user_input,
-        "time": "Now"
-    })
+    st.session_state["chat_messages"].append(
+        {"role": "user", "text": user_input, "time": "Now"}
+    )
 
     # Analyze via SCAMWatch API
     with st.spinner("Analyzing message..."):
         try:
             response = httpx.post(
                 f"{API_BASE}/api/scamwatch/analyze",
-                json={
-                    "text": user_input,
-                    "channel": "whatsapp",
-                    "language": "en"
-                },
-                timeout=60.0
+                json={"text": user_input, "channel": "whatsapp", "language": "en"},
+                timeout=60.0,
             )
 
             if response.status_code == 200:
@@ -225,40 +238,46 @@ if send_clicked and user_input:
                     bot_response += f"**Verdict:** {data['verdict']}\n\n"
                     bot_response += "**Recommendation:** Exercise caution. Verify independently before taking any action."
                 else:
-                    bot_response = f"✅ **LOW RISK**\n\n"
+                    bot_response = "✅ **LOW RISK**\n\n"
                     bot_response += f"**Verdict:** {data['verdict']}\n\n"
                     bot_response += "This message appears to be low risk, but always verify independently."
 
                 # Add bot response to chat
-                st.session_state["chat_messages"].append({
-                    "role": "bot",
-                    "text": bot_response,
-                    "time": "Now"
-                })
+                st.session_state["chat_messages"].append(
+                    {"role": "bot", "text": bot_response, "time": "Now"}
+                )
 
             else:
-                st.session_state["chat_messages"].append({
-                    "role": "bot",
-                    "text": "Sorry, I couldn't analyze this message. Please try again.",
-                    "time": "Now"
-                })
+                st.session_state["chat_messages"].append(
+                    {
+                        "role": "bot",
+                        "text": "Sorry, I couldn't analyze this message. Please try again.",
+                        "time": "Now",
+                    }
+                )
 
         except httpx.ConnectError:
-            st.session_state["chat_messages"].append({
-                "role": "bot",
-                "text": "Cannot connect to SENTINEL backend. Ensure backend is running on port 8000.",
-                "time": "Now"
-            })
+            st.session_state["chat_messages"].append(
+                {
+                    "role": "bot",
+                    "text": "Cannot connect to SENTINEL backend. Ensure backend is running on port 8000.",
+                    "time": "Now",
+                }
+            )
         except Exception as e:
-            st.session_state["chat_messages"].append({
-                "role": "bot",
-                "text": f"Error analyzing message: {str(e)}",
-                "time": "Now"
-            })
+            st.session_state["chat_messages"].append(
+                {
+                    "role": "bot",
+                    "text": f"Error analyzing message: {str(e)}",
+                    "time": "Now",
+                }
+            )
 
     st.rerun()
 
 # ── FOOTER ───────────────────────────────────────────────────────────────────
 st.markdown("---")
-st.caption("This is a demo simulation of WhatsApp Shield. In production, this would be a WhatsApp Business API bot accessible via a phone number.")
+st.caption(
+    "This is a demo simulation of WhatsApp Shield. In production, this would be a WhatsApp Business API bot accessible via a phone number."
+)
 st.caption("SENTINEL — AI for Digital Public Safety | ET AI Hackathon 2.0")

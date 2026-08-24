@@ -1,0 +1,15 @@
+# Runtime artifacts
+data/
+reports/
+*.log
+.mimocode/
+
+# Environment & secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/

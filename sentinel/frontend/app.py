@@ -12,11 +12,12 @@ st.set_page_config(
     page_title="SENTINEL — Digital Public Safety Intelligence",
     page_icon="🛡️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # ── GLOBAL STYLES ─────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
@@ -91,11 +92,14 @@ footer {visibility: hidden;}
     transform: translateY(-2px);
 }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ── HEADER ─────────────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <div style="background:linear-gradient(135deg,#060B14 0%,#0d1b2a 60%,#060B14 100%);
             border:1px solid #00aaff22;border-radius:12px;padding:28px 32px;margin-bottom:24px;">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
@@ -120,7 +124,9 @@ st.markdown("""
         </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ── LIVE DATA FETCH ────────────────────────────────────────────────────────────
@@ -133,9 +139,13 @@ def fetch_stats():
     except Exception:
         pass
     return {
-        "total_events": 0, "scamwatch_events": 0, "currencyguard_events": 0,
-        "fraudgraph_events": 0, "high_risk_count": 0, "critical_risk_count": 0,
-        "last_updated": "--"
+        "total_events": 0,
+        "scamwatch_events": 0,
+        "currencyguard_events": 0,
+        "fraudgraph_events": 0,
+        "high_risk_count": 0,
+        "critical_risk_count": 0,
+        "last_updated": "--",
     }
 
 
@@ -176,7 +186,7 @@ def fetch_health():
             "CURRENCYGuard": {"status": "offline"},
             "FRAUDGraph": {"status": "offline"},
             "ChromaDB": {"status": "offline"},
-        }
+        },
     }
 
 
@@ -189,8 +199,11 @@ def fetch_timeline():
     except Exception:
         pass
     return {
-        "total_today": 0, "critical_today": 0, "high_today": 0,
-        "highest_risk_type": "LOW", "buckets": [],
+        "total_today": 0,
+        "critical_today": 0,
+        "high_today": 0,
+        "highest_risk_type": "LOW",
+        "buckets": [],
     }
 
 
@@ -204,8 +217,18 @@ timeline = fetch_timeline()
 # ── MODULE STATUS ROW ──────────────────────────────────────────────────────────
 st.markdown("### System Status")
 status_cols = st.columns(4)
-module_icons = {"SCAMWatch": "SCAM", "CURRENCYGuard": "CURRENCY", "FRAUDGraph": "FRAUD", "ChromaDB": "DB"}
-module_descs = {"SCAMWatch": "Scam Detection", "CURRENCYGuard": "Currency Auth", "FRAUDGraph": "Fraud Networks", "ChromaDB": "Intelligence Store"}
+module_icons = {
+    "SCAMWatch": "SCAM",
+    "CURRENCYGuard": "CURRENCY",
+    "FRAUDGraph": "FRAUD",
+    "ChromaDB": "DB",
+}
+module_descs = {
+    "SCAMWatch": "Scam Detection",
+    "CURRENCYGuard": "Currency Auth",
+    "FRAUDGraph": "Fraud Networks",
+    "ChromaDB": "Intelligence Store",
+}
 
 for i, (mod_name, mod_info) in enumerate(health.get("modules", {}).items()):
     status = mod_info.get("status", "offline")
@@ -213,14 +236,17 @@ for i, (mod_name, mod_info) in enumerate(health.get("modules", {}).items()):
     icon = module_icons.get(mod_name, "MOD")
     desc = module_descs.get(mod_name, "")
     with status_cols[i % 4]:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="sentinel-card" style="text-align:center;padding:16px">
             <div style="font-size:1.8rem">{icon}</div>
             <div style="color:#e5e7eb;font-weight:600;margin:6px 0 4px">{mod_name}</div>
             <div style="color:#6b7280;font-size:0.72rem;margin-bottom:8px">{desc}</div>
             <span class="status-pill {css_class}">{status.upper()}</span>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 st.markdown("---")
 
@@ -237,23 +263,35 @@ col_counter, col_chart = st.columns([1, 2])
 
 with col_counter:
     if total_today > 0:
-        counter_color = "#dc2626" if critical_today > 0 else "#f97316" if high_today > 0 else "#00aaff"
-        st.markdown(f"""
+        counter_color = (
+            "#dc2626"
+            if critical_today > 0
+            else "#f97316"
+            if high_today > 0
+            else "#00aaff"
+        )
+        st.markdown(
+            f"""
         <div class="sentinel-card" style="text-align:center;padding:24px">
             <div class="stat-label">Threats Detected Today</div>
             <div class="stat-number" style="color:{counter_color}">{total_today}</div>
             {"<div style='color:#dc2626;font-size:0.8rem;font-weight:bold'>CRITICAL: " + str(critical_today) + "</div>" if critical_today > 0 else ""}
             {"<div style='color:#f97316;font-size:0.8rem'>HIGH: " + str(high_today) + "</div>" if high_today > 0 else ""}
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
     else:
-        st.markdown("""
+        st.markdown(
+            """
         <div class="sentinel-card" style="text-align:center;padding:24px">
             <div class="stat-label">Threats Detected Today</div>
             <div class="stat-number" style="color:#374151">0</div>
             <div style="color:#6b7280;font-size:0.75rem">No threats detected yet</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 with col_chart:
     buckets = timeline.get("buckets", [])
@@ -268,7 +306,9 @@ with col_chart:
                 "MEDIUM": [b.get("MEDIUM", 0) for b in active_buckets],
                 "LOW": [b.get("LOW", 0) for b in active_buckets],
             }
-            st.bar_chart(chart_data, x="Hour", color=["#dc2626", "#f97316", "#f59e0b", "#4ade80"])
+            st.bar_chart(
+                chart_data, x="Hour", color=["#dc2626", "#f97316", "#f59e0b", "#4ade80"]
+            )
         else:
             st.info("No threat activity in time buckets yet.")
     else:
@@ -282,32 +322,36 @@ st.markdown("### Intelligence Summary")
 
 stat_cols = st.columns(6)
 stat_defs = [
-    ("total_events",        "Total Events",     "#00aaff"),
-    ("scamwatch_events",    "Scam Alerts",      "#ef4444"),
-    ("currencyguard_events","Currency Checks",  "#f59e0b"),
-    ("fraudgraph_events",   "Fraud Networks",   "#8b5cf6"),
-    ("high_risk_count",     "High Risk",        "#f97316"),
-    ("critical_risk_count", "Critical",         "#dc2626"),
+    ("total_events", "Total Events", "#00aaff"),
+    ("scamwatch_events", "Scam Alerts", "#ef4444"),
+    ("currencyguard_events", "Currency Checks", "#f59e0b"),
+    ("fraudgraph_events", "Fraud Networks", "#8b5cf6"),
+    ("high_risk_count", "High Risk", "#f97316"),
+    ("critical_risk_count", "Critical", "#dc2626"),
 ]
 
 for i, (key, label, color) in enumerate(stat_defs):
     value = stats.get(key, 0)
     with stat_cols[i]:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="sentinel-card" style="text-align:center">
             <div class="stat-label">{label}</div>
             <div class="stat-number" style="color:{color}">{value}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 # Event distribution bar
 total = max(stats.get("total_events", 1), 1)
-scam_pct   = round(stats.get("scamwatch_events", 0) / total * 100)
-curr_pct   = round(stats.get("currencyguard_events", 0) / total * 100)
-fraud_pct  = round(stats.get("fraudgraph_events", 0) / total * 100)
+scam_pct = round(stats.get("scamwatch_events", 0) / total * 100)
+curr_pct = round(stats.get("currencyguard_events", 0) / total * 100)
+fraud_pct = round(stats.get("fraudgraph_events", 0) / total * 100)
 remain_pct = max(100 - scam_pct - curr_pct - fraud_pct, 0)
 
-st.markdown(f"""
+st.markdown(
+    f"""
 <div style="margin:8px 0 4px">
     <div style="font-size:0.7rem;color:#6b7280;margin-bottom:6px;letter-spacing:1px">EVENT DISTRIBUTION</div>
     <div style="height:8px;border-radius:4px;overflow:hidden;display:flex;background:#1f2937">
@@ -322,9 +366,14 @@ st.markdown(f"""
         <span><span style="color:#8b5cf6">■</span> FRAUDGraph</span>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-st.markdown(f"<div style='text-align:right;color:#374151;font-size:0.68rem'>Last updated: {stats.get('last_updated','--')}</div>", unsafe_allow_html=True)
+st.markdown(
+    f"<div style='text-align:right;color:#374151;font-size:0.68rem'>Last updated: {stats.get('last_updated', '--')}</div>",
+    unsafe_allow_html=True,
+)
 st.markdown("---")
 
 
@@ -344,10 +393,14 @@ with col_feed:
 
     if recent_events:
         risk_color_map = {
-            "CRITICAL": "#dc2626", "HIGH": "#f97316",
-            "MEDIUM": "#f59e0b", "LOW": "#4ade80",
-            "SUSPECT": "#f59e0b", "GENUINE": "#4ade80",
-            "COUNTERFEIT": "#dc2626", "INCONCLUSIVE": "#9ca3af"
+            "CRITICAL": "#dc2626",
+            "HIGH": "#f97316",
+            "MEDIUM": "#f59e0b",
+            "LOW": "#4ade80",
+            "SUSPECT": "#f59e0b",
+            "GENUINE": "#4ade80",
+            "COUNTERFEIT": "#dc2626",
+            "INCONCLUSIVE": "#9ca3af",
         }
 
         module_tag_map = {
@@ -358,14 +411,17 @@ with col_feed:
 
         def feed_class(event_type: str) -> str:
             et = event_type.upper()
-            if "SCAM" in et:   return "feed-item-SCAM"
-            if "CURR" in et:   return "feed-item-CURRENCY"
-            if "FRAUD" in et:  return "feed-item-FRAUD"
+            if "SCAM" in et:
+                return "feed-item-SCAM"
+            if "CURR" in et:
+                return "feed-item-CURRENCY"
+            if "FRAUD" in et:
+                return "feed-item-FRAUD"
             return ""
 
         for event in recent_events:
             etype = event.get("event_type", "UNKNOWN").upper()
-            risk  = str(event.get("risk_level", "UNKNOWN")).upper()
+            risk = str(event.get("risk_level", "UNKNOWN")).upper()
             content = event.get("content_preview", "")
 
             fc = feed_class(etype)
@@ -377,7 +433,8 @@ with col_feed:
 
             rc = risk_color_map.get(risk, "#9ca3af")
 
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div class="feed-item {fc}">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
                     <span style="background:{tag_bg};color:{tag_color};padding:2px 8px;border-radius:10px;font-size:0.68rem;font-weight:bold">
@@ -387,14 +444,19 @@ with col_feed:
                 </div>
                 <div style="color:#9ca3af;line-height:1.4">{content}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
     else:
-        st.markdown("""
+        st.markdown(
+            """
         <div style="text-align:center;padding:40px 0;color:#4b5563">
             <div style="font-size:2.5rem">No intelligence events yet.</div>
             <div style="font-size:0.8rem;margin-top:6px">Analyze threats using the modules in the sidebar.</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 
 # ── RIGHT: CROSS-MODULE INTELLIGENCE ─────────────────────────────────────────
@@ -411,7 +473,12 @@ with col_intel:
 
             risk_priority = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
             top_risk = next((r for r in risk_priority if r in risks), "UNKNOWN")
-            rc_map = {"CRITICAL": "#dc2626", "HIGH": "#f97316", "MEDIUM": "#f59e0b", "LOW": "#4ade80"}
+            rc_map = {
+                "CRITICAL": "#dc2626",
+                "HIGH": "#f97316",
+                "MEDIUM": "#f59e0b",
+                "LOW": "#4ade80",
+            }
             rc = rc_map.get(top_risk, "#9ca3af")
 
             module_badges = " ".join(
@@ -419,7 +486,8 @@ with col_intel:
                 for m in modules_seen
             )
 
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div class="correlation-badge">
                 <div style="display:flex;justify-content:space-between;margin-bottom:6px">
                     <code style="color:#a78bfa;font-size:0.8rem">{entity_val}</code>
@@ -427,12 +495,15 @@ with col_intel:
                 </div>
                 <div style="margin-bottom:6px">{module_badges}</div>
                 <div style="color:#6b7280;font-size:0.72rem">
-                    Detected in {match_count} module{'s' if match_count != 1 else ''} -- high confidence threat signal
+                    Detected in {match_count} module{"s" if match_count != 1 else ""} -- high confidence threat signal
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """,
+                unsafe_allow_html=True,
+            )
     else:
-        st.markdown("""
+        st.markdown(
+            """
         <div style="text-align:center;padding:40px 16px;color:#4b5563;background:#0d1117;border-radius:8px">
             <div style="font-size:2rem">No cross-module correlations found yet.</div>
             <div style="font-size:0.75rem;margin-top:6px;color:#374151">
@@ -440,25 +511,34 @@ with col_intel:
                 SCAMWatch and FRAUDGraph to see correlations appear here.
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     st.markdown("---")
     st.markdown("### Launch Module")
 
     nav_items = [
         ("SCAM", "SCAMWatch", "Analyze suspicious messages, calls, and scam texts"),
-        ("CURRENCY", "CURRENCYGuard", "Upload currency note image for counterfeit detection"),
+        (
+            "CURRENCY",
+            "CURRENCYGuard",
+            "Upload currency note image for counterfeit detection",
+        ),
         ("FRAUD", "FRAUDGraph", "Map fraud networks and generate intelligence reports"),
     ]
 
     for icon, name, desc in nav_items:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="module-nav-card">
             <div style="font-size:1.6rem">{icon}</div>
             <div style="color:#e5e7eb;font-weight:700;margin:6px 0 4px">{name}</div>
             <div style="color:#6b7280;font-size:0.72rem">{desc}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 
 # ── FOOTER ────────────────────────────────────────────────────────────────────
@@ -466,26 +546,41 @@ st.markdown("---")
 col_f1, col_f2, col_f3 = st.columns(3)
 
 overall_status = health.get("overall", "offline")
-overall_color = "#4ade80" if overall_status == "operational" else "#f59e0b" if overall_status == "degraded" else "#ef4444"
+overall_color = (
+    "#4ade80"
+    if overall_status == "operational"
+    else "#f59e0b"
+    if overall_status == "degraded"
+    else "#ef4444"
+)
 
 with col_f1:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style="color:#4b5563;font-size:0.72rem">
         System: <span style="color:{overall_color};font-weight:bold">{overall_status.upper()}</span>
         &middot; SENTINEL v0.4
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col_f2:
-    st.markdown("""
+    st.markdown(
+        """
     <div style="color:#374151;font-size:0.72rem;text-align:center">
         ET AI Hackathon 2.0 &middot; AI for Digital Public Safety
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col_f3:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style="color:#4b5563;font-size:0.72rem;text-align:right">
-        Intelligence Store: {stats.get('total_events', 0)} events indexed
+        Intelligence Store: {stats.get("total_events", 0)} events indexed
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
